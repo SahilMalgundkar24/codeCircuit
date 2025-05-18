@@ -1,6 +1,7 @@
 "use client";
+
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { Suspense, useEffect, useState, useCallback, useRef } from "react";
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -60,11 +61,23 @@ const nodeTypes = {
   custom: CustomNode,
 };
 
+// Main page component with Suspense boundary for useSearchParams
 export default function MindMapsPage() {
   return (
     <ReactFlowProvider>
-      <MindMapContent />
+      <Suspense fallback={<LoadingState />}>
+        <MindMapContent />
+      </Suspense>
     </ReactFlowProvider>
+  );
+}
+
+// Loading state component
+function LoadingState() {
+  return (
+    <div className="w-full h-screen flex items-center justify-center bg-[#0e291c] text-white">
+      <div className="text-2xl">Loading mind map...</div>
+    </div>
   );
 }
 
@@ -357,7 +370,7 @@ function MindMapContent() {
                   type="text"
                   value={newNodeTitle}
                   onChange={(e) => setNewNodeTitle(e.target.value)}
-                  className="w-full p-2 rounded text-gray-200"
+                  className="w-full p-2 rounded bg-[#386e51] text-gray-200"
                   placeholder="Enter node title"
                 />
               </div>
@@ -367,7 +380,7 @@ function MindMapContent() {
                 <textarea
                   value={newNodeContent}
                   onChange={(e) => setNewNodeContent(e.target.value)}
-                  className="w-full p-2 rounded text-gray-200 h-16 lg:h-24"
+                  className="w-full p-2 rounded bg-[#386e51] text-gray-200 h-16 lg:h-24"
                   placeholder="Enter node description"
                 />
               </div>
