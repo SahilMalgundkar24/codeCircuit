@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import BackgroundSVG from "./BackgroundSVG"; // Import the new SVG component
 
 const Hero = () => {
   const router = useRouter();
@@ -8,13 +9,6 @@ const Hero = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [rippleStyle, setRippleStyle] = useState({});
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  // Remove TypeScript annotation and use regular JavaScript
-  const circleRefs = useRef([]);
-
-  // Initialize refs array
-  useEffect(() => {
-    circleRefs.current = circleRefs.current.slice(0, 3);
-  }, []);
 
   const handleGenerate = (e) => {
     if (!inputValue.trim()) return;
@@ -78,7 +72,6 @@ const Hero = () => {
 
   // Track mouse movement
   useEffect(() => {
-    // Remove TypeScript type annotation for MouseEvent
     const handleMouseMove = (e) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
@@ -90,84 +83,11 @@ const Hero = () => {
     };
   }, []);
 
-  // Update circle positions with a delay effect
-  useEffect(() => {
-    const updateCirclePosition = (index, delay) => {
-      const circle = circleRefs.current[index];
-      if (!circle) return;
-
-      setTimeout(() => {
-        // Calculate distance from mouse to create a pull effect
-        const currentCx = Number.parseFloat(circle.getAttribute("cx") || "0");
-        const currentCy = Number.parseFloat(circle.getAttribute("cy") || "0");
-
-        // Pull factor decreases with circle index (outer circles move less)
-        const pullFactor = 0.05 / (index + 1);
-
-        // Calculate new position with smooth following
-        const newCx = currentCx + (mousePosition.x - currentCx) * pullFactor;
-        const newCy = currentCy + (mousePosition.y - currentCy) * pullFactor;
-
-        // Update circle position
-        circle.setAttribute("cx", newCx.toString());
-        circle.setAttribute("cy", newCy.toString());
-      }, delay);
-    };
-
-    // Update each circle with increasing delay
-    updateCirclePosition(0, 10);
-    updateCirclePosition(1, 30);
-    updateCirclePosition(2, 50);
-
-    // Request animation frame for smooth animation
-    const animationId = requestAnimationFrame(() => {
-      updateCirclePosition(0, 10);
-      updateCirclePosition(1, 30);
-      updateCirclePosition(2, 50);
-    });
-
-    return () => cancelAnimationFrame(animationId);
-  }, [mousePosition]);
-
   return (
     <>
       <div className="mt-28">
-        {/* Interactive circular lines */}
-        <svg className="fixed inset-0 w-full h-full pointer-events-none -z-5">
-          <circle
-            ref={(el) => (circleRefs.current[0] = el)}
-            cx="50%"
-            cy="50%"
-            r="150"
-            fill="none"
-            stroke="#79CDB5"
-            strokeWidth="1"
-            strokeDasharray="10 5"
-            className="opacity-30"
-          />
-          <circle
-            ref={(el) => (circleRefs.current[1] = el)}
-            cx="50%"
-            cy="50%"
-            r="250"
-            fill="none"
-            stroke="#79CDB5"
-            strokeWidth="1"
-            strokeDasharray="15 10"
-            className="opacity-20"
-          />
-          <circle
-            ref={(el) => (circleRefs.current[2] = el)}
-            cx="50%"
-            cy="50%"
-            r="350"
-            fill="none"
-            stroke="#79CDB5"
-            strokeWidth="1"
-            strokeDasharray="5 15"
-            className="opacity-10"
-          />
-        </svg>
+        {/* Use the BackgroundSVG component and pass the mousePosition state */}
+        <BackgroundSVG mousePosition={mousePosition} />
 
         {/* Center blur element with animation */}
         <div className="absolute inset-0 flex justify-center items-center -z-10">
